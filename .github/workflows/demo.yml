@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Greeting Hello
-        run: echo "Hello, this is the first job!"
+        run: npm run build
 
       - name: Good Bye
         run: |
