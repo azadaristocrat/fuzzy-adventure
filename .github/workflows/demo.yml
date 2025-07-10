@@ -4,12 +4,22 @@ jobs:
   first_job:
     runs-on: ubuntu-latest
     steps:
-      - name: Greeting Hello
-        run: |
-          cd github-test
-          npm run build
-
-      - name: Good Bye
-        run: |
-          echo "This is the first job ending."
-          echo "Goodbye from the first job!"
+    - name: move repository
+      run: cd github-test
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+      
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Ionic CLI
+      run: npm install -g @ionic/cli
+      
+    - name: Build Ionic app
+      run: ionic build --prod
