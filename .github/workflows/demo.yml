@@ -8,4 +8,6 @@ jobs:
         run: echo "Hello, this is the first job!"
 
       - name: Good Bye
-        run: echo "This is the first job ending."
+        run: |
+          echo "This is the first job ending."
+          echo "Goodbye from the first job!"
