@@ -4,20 +4,15 @@ jobs:
   first_job:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-      
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install Ionic CLI
-      run: npm install -g @ionic/cli
-      
-    - name: Build Ionic app
-      run: ionic build --prod
+      - name: Full Debug
+        run: |
+          echo "=== Environment ==="
+          pwd
+          ls -la
+          echo "=== Node/NPM ==="
+          node --version
+          npm --version
+          echo "=== Package.json ==="
+          cat package.json || echo "No package.json found"
+          echo "=== NPM Config ==="
+          npm config list
