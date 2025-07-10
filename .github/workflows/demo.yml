@@ -5,7 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Greeting Hello
-        run: npm run build
+        run: |
+          cd github-test
+          npm run build
 
       - name: Good Bye
         run: |
