@@ -32,14 +32,12 @@ jobs:
     - name: Build Ionic app
       run: ionic build --prod
       
-    - name: Add Android platform
-      run: ionic capacitor add android
-      
     - name: Copy assets to Android
       run: ionic capacitor copy android
       
     - name: Update Android project
       run: ionic capacitor update android
+      
     - name: Build Android project
       run: |
         cd android
