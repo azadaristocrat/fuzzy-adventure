@@ -18,7 +18,6 @@ jobs:
       run: ionic build --prod
     - name: Build apk
       run: |
-        ionic capacitor build android --prod --release
         cd android
         ./gradlew assembleRelease
     - name: Upload APK
