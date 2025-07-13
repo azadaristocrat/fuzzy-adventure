@@ -8,6 +8,21 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
     - name: Install dependencies
       run: npm ci
       
@@ -16,12 +31,22 @@ jobs:
       
     - name: Build Ionic app
       run: ionic build --prod
-    - name: Build apk
+      
+    - name: Add Android platform
+      run: ionic capacitor add android
+      
+    - name: Copy assets to Android
+      run: ionic capacitor copy android
+      
+    - name: Update Android project
+      run: ionic capacitor update android
+    - name: Build Android project
       run: |
         cd android
         ./gradlew assembleRelease
+      # create a apk build and upload it to GitHub Actions
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: app-release.apk
-        path: android/app/build/outputs/apk/release/app-release.apk
+        name: app-release-unsigned.apk
+        path: android/app/build/outputs/apk/release/app-release-unsigned.apk
