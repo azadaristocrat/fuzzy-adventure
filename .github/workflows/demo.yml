@@ -16,3 +16,13 @@ jobs:
       
     - name: Build Ionic app
       run: ionic build --prod
+    - name: Build apk
+      run: |
+        ionic capacitor build android --prod --release
+        cd android
+        ./gradlew assembleRelease
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release.apk
+        path: android/app/build/outputs/apk/release/app-release.apk
