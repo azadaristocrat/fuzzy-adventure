@@ -64,7 +64,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '22'
         cache: 'npm'
         
     - name: Setup Xcode
@@ -80,9 +80,6 @@ jobs:
       
     - name: Build Ionic app
       run: ionic build --prod
-      
-    - name: Add iOS platform
-      run: ionic capacitor add ios
       
     - name: Sync Capacitor
       run: ionic capacitor sync ios
