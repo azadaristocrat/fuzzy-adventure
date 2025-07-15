@@ -1,0 +1,55 @@
+name: Build Ionic Angular App and Generate APK
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      
+    - name: Install Ionic CLI
+      run: npm install -g @ionic/cli
+      
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build Ionic app
+      run: ionic build --prod
+      
+    - name: Sync Capacitor
+      run: ionic capacitor sync android
+      
+    - name: Build Android APK (unsigned)
+      run: |
+        cd android
+        ./gradlew assembleDebug
+        
+    - name: Upload APK as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: unsigned-apk
+        path: ./app-unsigned-*.apk
+        retention-days: 30
