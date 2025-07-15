@@ -46,10 +46,10 @@ jobs:
       run: |
         cd android
         ./gradlew assembleDebug
-        
+    - name: list APK files
+      run: ls -la android/app/build/outputs/apk/debug/
     - name: Upload APK as artifact
       uses: actions/upload-artifact@v4
       with:
         name: unsigned-apk
-        path: ./app-unsigned-*.apk
-        retention-days: 30
+        path: android/app/build/outputs/apk/debug/app-debug.apk
