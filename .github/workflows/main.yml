@@ -56,96 +56,51 @@ jobs:
   
   build-ios:
     runs-on: macos-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '22'
         cache: 'npm'
-        
+
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: latest-stable
-        
+
     - name: Install Ionic CLI
       run: npm install -g @ionic/cli
-      
+
     - name: Install dependencies
       run: npm ci
-      
+
     - name: Build Ionic app
       run: ionic build --prod
-      
+
     - name: Sync Capacitor
       run: ionic capacitor sync ios
-      
+
     - name: Install CocoaPods
       run: |
         cd ios/App
         pod install
-        
-    - name: Create export options plist
+
+    - name: Install Fastlane
       run: |
-        cat > ios/export-options.plist << EOF
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-          <key>method</key>
-          <string>development</string>
-          <key>signingStyle</key>
-          <string>manual</string>
-          <key>signingCertificate</key>
-          <string>-</string>
-          <key>provisioningProfiles</key>
-          <dict/>
-          <key>stripSwiftSymbols</key>
-          <true/>
-          <key>uploadBitcode</key>
-          <false/>
-          <key>uploadSymbols</key>
-          <false/>
-        </dict>
-        </plist>
-        EOF
-        
-    - name: Build iOS app (unsigned)
+        sudo gem install fastlane
+
+    - name: Build iOS app with Fastlane
       run: |
         cd ios/App
-        xcodebuild -workspace App.xcworkspace \
-          -scheme App \
-          -configuration Debug \
-          -destination 'generic/platform=iOS' \
-          -archivePath App.xcarchive \
-          archive
-          
-    - name: Export IPA
-      run: |
-        cd ios/App
-        xcodebuild -exportArchive \
-          -archivePath App.xcarchive \
-          -exportPath ./export \
-          -exportOptionsPlist ../../export-options.plist
-        
-    - name: Rename IPA
-      run: |
-        mv ios/App/export/App.ipa ./app-unsigned-$(date +%Y%m%d-%H%M%S).ipa
-        
-    - name: Upload IPA to server
-      run: |
-        curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.SERVER_AUTH_TOKEN }}" \
-          -F "file=@./app-unsigned-$(date +%Y%m%d-%H%M%S).ipa" \
-          ${{ secrets.SERVER_UPLOAD_URL }}
-        
+        fastlane build
+
     - name: Upload IPA as artifact
       uses: actions/upload-artifact@v4
       with:
         name: unsigned-ipa
-        path: ./app-unsigned-*.ipa
+        path: ios/App/fastlane/output/*.ipa
         retention-days: 30
